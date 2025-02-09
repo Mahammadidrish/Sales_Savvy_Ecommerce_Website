@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sales_savvy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  sales-savvy-app:
+    image: sales-savvy-app
+    container_name: sales-savvy-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sales_savvy
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      JWT_SECRET: your-very-long-secure-secret-key-for-production-12345678901234567890
+      RAZORPAY_KEY_ID: rzp_test_4ZEx6k51px6Qcf
+      RAZORPAY_KEY_SECRET: N6vXq3Hb4L2WO28EamllBKDO
+      SPRING_MAIL_USERNAME: munnaidrish9@gmail.com
+      SPRING_MAIL_PASSWORD: rzeasieryvoqwezo
+    volumes:
+      - ./src/main/resources/application.properties:/app/config/application.properties
+
+volumes:
+  mysql_data:
